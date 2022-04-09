@@ -296,8 +296,8 @@ class IRRequest(models.Model):
         for line in self.approve_request_ids:
             line._compute_state()
         if any(line.state != "available" for line in self.approve_request_ids):
-            raise Warning(
-                "Please procure the items that are short in stock or process pending purchase agreements and try again!"
+            raise UserError(
+                "Please procure the items that are short in stock or process pending purchases and try again!"
             )
         else:
             self.state = 'transfer'
@@ -394,14 +394,14 @@ class IRRequest(models.Model):
         model_data = self.env["ir.model.data"]
         fragment.update(base_url=base_url)
         fragment.update(
-            menu_id=model_data.get_object_reference(
+            menu_id=model_data.check_object_reference(
                 "material_requisition", "material_requisition_menu_1"
             )[-1]
         )
         fragment.update(model="ir.request")
         fragment.update(view_type="form")
         fragment.update(
-            action=model_data.get_object_reference(
+            action=model_data.check_object_reference(
                 "material_requisition", "material_requisition_action_window"
             )[-1]
         )
